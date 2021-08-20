@@ -5,7 +5,8 @@
 
 // For getPlatformVersion; remove unless needed for your plugin implementation.
 #include <VersionHelpers.h>
-
+#include <flutter/dart_project.h>
+#include <flutter/flutter_view_controller.h>
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
@@ -13,6 +14,9 @@
 #include <map>
 #include <memory>
 #include <sstream>
+
+#include "flutter_window.h"
+#include "run_loop.h"
 
 namespace
 {
@@ -57,6 +61,23 @@ namespace
     return TRUE; // continue enumerating
   }
 
+  void showScreen(int index)
+  {
+    RunLoop run_loop;
+
+    flutter::DartProject project(L"data 2");
+
+    FlutterWindow window(&run_loop, project);
+    Win32Window::Point origin(10, 10);
+    Win32Window::Size size(1280, 720);
+    if (!window.CreateAndShow(L"example 2", origin, size))
+    {
+      return;
+    }
+    window.SetQuitOnClose(true);
+
+    run_loop.Run();
+  }
   std::string toString(WCHAR *v)
   {
     std::wstring ws(v);
@@ -118,7 +139,7 @@ namespace
       {
         std::cout << i << " " << screens[i].left << "\n";
       }
-
+      showScreen(3);
       std::ostringstream version_stream;
       DISPLAY_DEVICE dd;
       dd.cb = sizeof(dd);

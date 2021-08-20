@@ -7,6 +7,9 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 set(PLUGIN_NAME "presentation_displays_plugin")
 
 add_library(${PLUGIN_NAME} SHARED
+  "flutter_window.cpp"
+  "run_loop.cpp"
+  "win32_window.cpp"
   "presentation_displays_plugin.cpp"
 )
 apply_standard_settings(${PLUGIN_NAME})
