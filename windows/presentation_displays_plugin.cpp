@@ -33,12 +33,37 @@ namespace
         std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
   };
 
+  std::vector<RECT> screens;
+
+  BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor,
+                                HDC hdcMonitor,
+                                LPRECT lprcMonitor,
+                                LPARAM dwData)
+  {
+    MONITORINFO info;
+    info.cbSize = sizeof(info);
+    if (GetMonitorInfo(hMonitor, &info))
+    {
+      RECT r = {};
+      r.bottom = info.rcMonitor.bottom;
+      r.left = info.rcMonitor.left;
+      r.right = info.rcMonitor.right;
+      r.top = info.rcMonitor.top;
+      screens.push_back(r);
+      std::cout << "Monitor x: " << std::abs(info.rcMonitor.left - info.rcMonitor.right)
+                << " y: " << std::abs(info.rcMonitor.top - info.rcMonitor.bottom)
+                << std::endl;
+    }
+    return TRUE; // continue enumerating
+  }
+
   std::string toString(WCHAR *v)
   {
     std::wstring ws(v);
     std::string st(ws.begin(), ws.end());
     return st;
   }
+
   // static
   void PresentationDisplaysPlugin::RegisterWithRegistrar(
       flutter::PluginRegistrarWindows *registrar)
@@ -87,6 +112,13 @@ namespace
     }
     else if (method_call.method_name().compare("listDisplay") == 0)
     {
+      screens.clear();
+      EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, 0);
+      for (size_t i = 0; i < screens.size(); i++)
+      {
+        std::cout << i << " " << screens[i].left << "\n";
+      }
+
       std::ostringstream version_stream;
       DISPLAY_DEVICE dd;
       dd.cb = sizeof(dd);
