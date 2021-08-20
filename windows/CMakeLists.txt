@@ -25,3 +25,4 @@ set(presentation_displays_bundled_libraries
   ""
   PARENT_SCOPE
 )
+target_compile_definitions(${PLUGIN_NAME} PRIVATE "NOMINMAX")

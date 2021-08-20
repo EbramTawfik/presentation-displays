@@ -3,12 +3,7 @@
 #include <windows.h>
 
 #include <algorithm>
-//
-//#define min(a, b) ((a) < (b) ? (a) : (b))
-//#define max(a, b) ((a) > (b) ? (a) : (b))
 
-#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
-#define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
 
 RunLoop::RunLoop() {}
 
@@ -68,13 +63,13 @@ void RunLoop::UnregisterFlutterInstance(
 
 RunLoop::TimePoint RunLoop::ProcessFlutterMessages()
 {
-  //TimePoint next_event_time = TimePoint::max();
-  TimePoint next_event_time = TimePoint();
+  TimePoint next_event_time = TimePoint::max();
+  //TimePoint next_event_time = TimePoint();
   for (auto instance : flutter_instances_)
   {
     std::chrono::nanoseconds wait_duration = instance->ProcessMessages();
-    //if (wait_duration != std::chrono::nanoseconds::max())
-    if (wait_duration != std::chrono::nanoseconds())
+    if (wait_duration != std::chrono::nanoseconds::max())
+    // if (wait_duration != std::chrono::nanoseconds())
     {
       next_event_time =
           min(next_event_time, TimePoint::clock::now() + wait_duration);
