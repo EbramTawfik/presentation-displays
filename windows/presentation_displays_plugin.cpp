@@ -33,21 +33,10 @@ namespace
         std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
   };
 
-  std::string replaceChar(std::string str, char ch1, char ch2)
-  {
-    for (int i = 0; i < str.length(); ++i)
-    {
-      if (str[i] == ch1)
-        str[i] = ch2;
-    }
-
-    return str;
-  }
   std::string toString(WCHAR *v)
   {
     std::wstring ws(v);
     std::string st(ws.begin(), ws.end());
-    st = replaceChar(st, '\\', ' ');
     return st;
   }
   // static
@@ -102,6 +91,7 @@ namespace
       DISPLAY_DEVICE dd;
       dd.cb = sizeof(dd);
       int deviceIndex = 0;
+      int id = 0;
       version_stream << "[";
       while (EnumDisplayDevices(0, deviceIndex, &dd, 0))
       {
@@ -116,7 +106,7 @@ namespace
 
           std::cout << "Device = " << toString(ddMonitor.DeviceID) << " " << name << " " << toString(ddMonitor.DeviceString) << " " << std::endl;
 
-          version_stream << "{\"displayId\" : " << monitorIndex << ", \"name\": \"" << name << "\"},";
+          version_stream << "{\"displayId\" : " << id++ << ", \"name\": \"" << name << "\"},";
           ++monitorIndex;
         }
         ++deviceIndex;
@@ -126,9 +116,8 @@ namespace
       res.pop_back();
       res += "]";
       std::cout << res;
-      res.replace(res.find("\\.\\"), sizeof("$name") - 1, "Somename");
       //"[{\"name\":\"Display 1\" ,\"displayId\":1}]"
-      result->Success(flutter::EncodableValue("[{\"name\":\"Display 1\" ,\"displayId\":1}]"));
+      result->Success(flutter::EncodableValue(res));
     }
     else
     {

@@ -53,9 +53,10 @@ class DisplayManager {
   ///
   /// See [DISPLAY_CATEGORY_PRESENTATION]
   FutureOr<List<Display>?> getDisplays({String? category}) async {
-    List<dynamic> origins = await jsonDecode(await _displayMethodChannel
-            ?.invokeMethod(_listDisplay, category)) ??
-        [];
+    String? jsonStr =
+        await _displayMethodChannel?.invokeMethod(_listDisplay, category);
+    jsonStr = jsonStr?.replaceAll("\\", " ");
+    List<dynamic> origins = await jsonDecode(jsonStr!) ?? [];
     List<Display> displays = [];
     origins.forEach((element) {
       final map = jsonDecode(jsonEncode(element));
@@ -73,7 +74,8 @@ class DisplayManager {
   ///
   /// @return The display's name.
   /// May be null.
-  FutureOr<String?> getNameByDisplayId(int displayId, {String? category}) async {
+  FutureOr<String?> getNameByDisplayId(int displayId,
+      {String? category}) async {
     List<Display> displays = await getDisplays(category: category) ?? [];
 
     String? name;
